@@ -47,7 +47,7 @@
 
                      <div class="form-group mb-3">
                         <label>Phone</label>
-                        <input type="number" name="phone" placeholder="(+91) 97989979889" required class="form-control" value="{{ $user->phone }}">
+                        <input type="text" id="phone" name="phone" placeholder="Enter phone number" class="form-control" value="{{ $user->phone }}">
                         @error('phone')<span class="text-danger">{{ $message }}</span>@enderror
                      </div>
 
@@ -124,8 +124,30 @@
                         $('#city-dropdown').html('<option value="">-- Select City --</option>');
                     }
                 });
-
             });
+
+            $('#phone').on('input', function() {
+                    var phone = $(this).val();
+                    
+                    var numericPhone = phone.replace(/\D/g, '');
+                    
+                    if (numericPhone.length > 10) {
+                        numericPhone = numericPhone.substring(0, 10);
+                    }
+                    
+                    var formattedPhone = '';
+                    if (numericPhone.length > 0) {
+                        formattedPhone = '+1- (' + numericPhone.substring(0, 3);
+                    }
+                    if (numericPhone.length > 3) {
+                        formattedPhone += ') ' + numericPhone.substring(3, 6);
+                    }
+                    if (numericPhone.length > 6) {
+                        formattedPhone += '-' + numericPhone.substring(6, 10);
+                    }
+                    
+                    $(this).val(formattedPhone);
+                });
         });
 
     </script>
