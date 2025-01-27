@@ -19,9 +19,7 @@
                 <div class="alert alert-primary mb-4 text-center">
                    <h4 >Crud Opertaion</h4>
                 </div>
-                <div class="d-flex justify-content-end">
-                  <a href="{{ url('all-users') }}" class="btn btn-info mb-2">All Users</a>    
-                </div> 
+               
                 @if(session('success'))
                     <div class="alert alert-success">
                         {{ session('success') }}
@@ -34,27 +32,28 @@
                 @endif
                 <form method="post" action="{{ url('save-user') }}" enctype="multipart/form-data">
                     @csrf
+                    <input type="hidden" value="{{ $user->id }}" name="id">
                     <div class="form-group mb-3">
                        <label>Name</label>
-                       <input type="text" name="name" placeholder="Enter Name" required class="form-control" value="{{ old('name') }}">
+                       <input type="text" name="name" placeholder="Enter Name" required class="form-control" value="{{ $user->name }}">
                        @error('name')<span class="text-danger">{{ $message }}</span>@enderror
                     </div>
 
                     <div class="form-group mb-3">
                         <label>Email</label>
-                        <input type="email" name="email" placeholder="abc@gmail.com" required class="form-control" value="{{ old('email') }}">
+                        <input type="email" name="email" placeholder="abc@gmail.com" required class="form-control" value="{{ $user->email }}">
                         @error('email')<span class="text-danger">{{ $message }}</span>@enderror
                      </div>
 
                      <div class="form-group mb-3">
                         <label>Phone</label>
-                        <input type="number" name="phone" placeholder="(+91) 97989979889" required class="form-control" value="{{ old('phone') }}">
+                        <input type="number" name="phone" placeholder="(+91) 97989979889" required class="form-control" value="{{ $user->phone }}">
                         @error('phone')<span class="text-danger">{{ $message }}</span>@enderror
                      </div>
 
                      <div class="form-group mb-3">
                         <label>Address</label>
-                        <textarea class="form-control" required value="{{ old('address') }}" name="address"></textarea>
+                        <textarea class="form-control" required value="{{ old('address') }}" name="address">{{ $user->address }}</textarea>
                         @error('address')<span class="text-danger">{{ $message }}</span>@enderror
                      </div>
 
@@ -62,11 +61,12 @@
                         <label>Image</label>
                         <input type="file" name="file" required class="form-control">
                         @error('file')<span class="text-danger">{{ $message }}</span>@enderror
+                        <img src="{{ url('storage/uploads/'.$user->image) }}" height="100px" width="100px" class="mt-2">
                      </div>
 
                      <div class="form-group mb-3">
                         <label>City</label>
-                        <input type="text" name="city" required class="form-control" value="{{ old('city') }}">
+                        <input type="text" name="city" required class="form-control" value="{{ $user->city  }}" >
                         @error('city')<span class="text-danger">{{ $message }}</span>@enderror
                      </div>
 
@@ -75,7 +75,7 @@
                         <select  id="country-dropdown" class="form-control" required name="countrty">
                             <option value="">-- Select Country --</option>
                             @foreach ($countries as $data)
-                            <option value="{{$data->id}}">
+                            <option value="{{$data->id}}" {{  $user->country_id == $data->id ? 'selected' : '' }}>
                                 {{$data->name}}
                             </option>
                             @endforeach

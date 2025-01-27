@@ -17,6 +17,9 @@
                 <div class="alert alert-primary mb-4 text-center">
                 <h4>All users </h4>
                 </div>
+                <div class="">
+                   <a href="{{ route('users.export') }}" class="btn btn-primary">Export Users to CSV</a>
+                </div>
 
                 <table class="table">
                     <thead class="thead-dark">
@@ -40,13 +43,13 @@
                         <th scope="row">1</th>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
-                        <td><img src="{{ asset('storage/app/public/uploads/' . $user->image ?? 'default-image.jpg') }}" height="20px" width="20px"></td>
+                        <td><img src="{{ asset('storage/uploads/' . $user->image ?? 'default-image.jpg') }}" height="20px" width="20px"></td>
                         <td>{{ $user->phone }}</td>
                         <td>{{ $user->country }}</td>
                         <td>{{ $user->state }}</td>
                         <td>{{ $user->city }}</td>
                         <td>{{ $user->address }}</td>
-                        <td><a href="" class="btn btn-warning">Edit</a>&nbsp<a href="{{ url('delete-user/'.$user->id) }}" class="btn btn-danger">Delete</a></td>
+                        <td><a href="{{ url('update-user/'.$user->id) }}" class="btn btn-warning">Edit</a>&nbsp<a href="{{ url('delete-user/'.$user->id) }}" class="btn btn-danger">Delete</a></td>
                       </tr>
                       @endforeach
                       @else

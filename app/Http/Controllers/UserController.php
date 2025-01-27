@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 Use App\Models\{Country,State,User};
 Use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\UsersExport;
 
 class UserController extends Controller
 {
-    public function index(){
+    public function index($id=''){
         $countries = Country::all();
+        // dd($user->toArray());
         return view('Welcome',compact('countries'));
     }
 
@@ -23,10 +26,16 @@ class UserController extends Controller
         return view('all-users',compact('users'));
     }
 
+    public function update(Request $request,$id){
+        $countries = Country::all();
+        $user = User::find($id);
+        return view('update-user',compact('countries','user'));
+    }
+
     public function insert(Request $request) {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
-            'email' => 'required|email|unique:users,email', 
+            'email' => 'required|email|unique:users,email,' . $request->id, 
             'phone' => 'required|string',
             'countrty' => 'required',
             'state' => 'required|string',
@@ -38,13 +47,22 @@ class UserController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-
-        // dd($request->all());
-        $file = $request->file('file');
-        $extension = $file->getClientoriginalExtension();
-        $filename = uniqid('file_') . '.' . $extension;
-        $path = $file->storeAs('uploads', $filename, 'public');
-        
+    
+        $user = $request->id ? User::findOrFail($request->id) : new User();
+    
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $extension = $file->getClientOriginalExtension();
+            $filename = uniqid('file_') . '.' . $extension;
+            $path = $file->storeAs('uploads', $filename, 'public');
+    
+            if ($user->image && file_exists(public_path('storage/uploads/' . $user->image))) {
+                unlink(public_path('storage/uploads/' . $user->image));
+            }
+        } else {
+            $filename = $user->image ?? null;
+        }
+    
         $data = [
             'name' => $request->name,
             'email' => $request->email,
@@ -55,10 +73,13 @@ class UserController extends Controller
             'city' => $request->city,
             'image' => $filename
         ];
-
-        $user = User::create($data);
-        return redirect('/')->with('success','user Data insert successfully');
+    
+        $user->fill($data);
+        $user->save();
+    
+        return redirect('/')->with('success', $request->id ? 'User data updated successfully' : 'User data inserted successfully');
     }
+    
 
     public function delete(Request $request,$id){
         $user = User::find($id);
@@ -70,6 +91,10 @@ class UserController extends Controller
         $user->delete();
 
         return redirect('/')->with('success','User delete successfully');
+    }
+
+    public function exportUsers(){
+        return Excel::download(new UsersExport, 'users.csv');
     }
     
 }
